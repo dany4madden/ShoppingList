@@ -1,0 +1,11 @@
+<resources>
+    <string name="app_name">ListBuddy</string>
+    <string name="action_settings">Settings</string>
+    <string name="aboutButton">About</string>
+    <string name="exitButton">Exit</string>
+    <string name="title_activity_manage_list">ManageListActivity</string>
+    <string name="action_add">Add</string>
+    <string name="action_delete">Delete</string>
+
+
+</resources>
