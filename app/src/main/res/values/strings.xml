@@ -6,6 +6,6 @@
     <string name="title_activity_manage_list">ManageListActivity</string>
     <string name="action_add">Add</string>
     <string name="action_delete">Delete</string>
-
+    <string name="list_item">List Item</string>
 
 </resources>

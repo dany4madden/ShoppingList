@@ -27,8 +27,8 @@
             android:label="Settings"></activity>
         <activity
             android:name=".ManageListActivity"
-            android:label="@string/title_activity_manage_list"
-            android:theme="@style/AppTheme.NoActionBar"></activity>
+            android:label="@string/title_activity_manage_list">
+        </activity>
     </application>
 
 </manifest>

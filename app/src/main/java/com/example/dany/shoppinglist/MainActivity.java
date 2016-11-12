@@ -98,9 +98,10 @@ public class MainActivity extends AppCompatActivity {
                 // create a text file by the inputString name. Capitalize the first letter
                 String fname = inputString.substring(0,1).toUpperCase() +
                         inputString.substring(1);
+                fname.trim();
                 try {
                     FileOutputStream fos = openFileOutput(fname + ".txt", Context.MODE_PRIVATE);
-                    fos.write("hello".getBytes());
+                    //fos.write("hello".getBytes());
                     fos.close();
                     doShowLists();
                 } catch (IOException e) {

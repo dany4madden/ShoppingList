@@ -14,13 +14,13 @@ import java.util.ListIterator;
 
 public class ShoppingList {
     String listname; // listname (is filename) without .txt
-    List <Item> items;
+    List <String> items; // TODO: make thia s list of <Item>
 
     public ShoppingList() {
 		listname = new String();
-		items = new ArrayList<Item>();
+		items = new ArrayList<String>();
 	}
-	public ShoppingList(String n, List <Item> i){
+	public ShoppingList(String n, List <String> i){
 		this.listname = n;
 		this.items = i;
 	}
