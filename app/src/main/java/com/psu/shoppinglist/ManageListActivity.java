@@ -1,4 +1,4 @@
-package com.example.dany.shoppinglist;
+package com.psu.shoppinglist;
 
 import android.app.ActionBar;
 import android.content.Context;
@@ -72,7 +72,7 @@ public class ManageListActivity extends AppCompatActivity {
             }
             is.close();
         } catch (IOException ioe) {
-                ioe.printStackTrace();
+            ioe.printStackTrace();
         }
         sl.items = ITEMLIST;
         if (ITEMLIST.isEmpty()) {
@@ -117,7 +117,7 @@ public class ManageListActivity extends AppCompatActivity {
                 if (inputString != null && !inputString.isEmpty()) {
                     // Capitalize the first letter
                     String theItem = inputString.trim().substring(0,1).toUpperCase() +
-                        inputString.trim().substring(1)+"\n";
+                            inputString.trim().substring(1)+"\n";
 
                     if (!itemIsInList(theItem)) {
                         try {

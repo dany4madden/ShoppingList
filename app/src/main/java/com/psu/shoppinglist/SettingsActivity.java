@@ -1,10 +1,8 @@
-package com.example.dany.shoppinglist;
+package com.psu.shoppinglist;
 
 import android.os.Bundle;
 import android.preference.PreferenceActivity;
 import android.preference.PreferenceFragment;
-
-import java.util.List;
 
 /**
  * Created by dany on 11/4/16.

@@ -1,4 +1,4 @@
-package com.example.dany.shoppinglist;
+package com.psu.shoppinglist;
 
 import android.app.Application;
 import android.test.ApplicationTestCase;

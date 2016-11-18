@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:fitsSystemWindows="true"
-    tools:context="com.example.dany.shoppinglist.ManageListActivity">
+    tools:context="com.psu.shoppinglist.ManageListActivity">
 
 
     <LinearLayout
@@ -17,7 +17,7 @@
         android:paddingTop="@dimen/activity_vertical_margin"
         android:background="@drawable/shadow"
         app:layout_behavior="@string/appbar_scrolling_view_behavior"
-        tools:context="com.example.dany.shoppinglist.ManageListActivity"
+        tools:context="com.psu.shoppinglist.ManageListActivity"
         tools:showIn="@layout/activity_manage_list">
         <ListView
             android:id="@+id/list_item"

@@ -1,4 +1,4 @@
-package com.example.dany.shoppinglist;
+package com.psu.shoppinglist;
 
 import org.junit.Test;
 
