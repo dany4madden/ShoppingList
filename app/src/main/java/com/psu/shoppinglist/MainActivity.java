@@ -154,6 +154,7 @@ public class MainActivity extends AppCompatActivity {
             }
             @Override
             protected void onPostExecute(AIResponse aiResponse) {
+                Boolean noToast = false;
                 if (aiResponse != null) {
                     Result result = aiResponse.getResult();
 
@@ -177,24 +178,29 @@ public class MainActivity extends AppCompatActivity {
                             response = "The A.I. was not able to determine the intent. Please try a different command.";
                     } else {
                         switch (intent) {
-                            case "add":
+                            case "addList":
                                 response = vCreateAList(result);
                                 break;
-                            case "remove":
+                            case "removeList":
                                 response = vRemoveAList(result);
                                 doShowLists();
                                 break;
                             case "count":
                                 response = vCountList(result);
                                 break;
-                            case "open":
+                            case "openList":
                                 response = vOpenList(result);
+                                noToast = true;
                                 break;
                             default:
-                                response = "Unmatched intent. I was not able to process that request.";
+                                response = "I heard: " + result.getResolvedQuery() +". I don't know what to do with that." ;
                         }
                     }
-                    Toast.makeText(getApplicationContext(), response, Toast.LENGTH_LONG).show();
+                    if (noToast == false) {
+                        for (int p = 0; p < 2; p++) {
+                            Toast.makeText(getApplicationContext(), response, Toast.LENGTH_LONG).show();
+                        }
+                    }
                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
                         t1.speak(response, TextToSpeech.QUEUE_FLUSH, null, null);
                     } else
@@ -225,7 +231,12 @@ public class MainActivity extends AppCompatActivity {
             listName = listName.trim();
             String fname = listName.substring(0, 1).toUpperCase() +
                     listName.substring(1);
-            showListItems(fname);
+            // check if list exist.
+            if (fileExists(fname)) {
+                showListItems(fname);
+            } else {
+                respond = "Open " + listName + " list failed. You need to create it first.";
+            }
         }
         return respond;
     }
@@ -306,7 +317,7 @@ public class MainActivity extends AppCompatActivity {
                     }
                 }
             } else
-                respond = "List creation failed. I didn't get a list name.";
+                respond = "List creation failed. A.I didn't return a list name to me because list name is likely not in the A.I's domain.";
         }
         return respond;
     }
