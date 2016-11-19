@@ -13,7 +13,10 @@ Supported voice commands are:
 - "Open Costco list"
 - "Count lists"
 
-To get to the Managed list page, labeled with the list name, say "Open <listName>". Or simpily click on the list name. To delete a list with touch, touch and hold on to the listname for two second to activate the delete dialog. The supported voice command on this page are:
+To get to the Managed list page, labeled with the list name, say "Open <listName>". Or simpily click on the list name. 
+To delete a list or an item on the list with touch, touch and hold on to the list name/item for two seconds to activate the delete dialog. 
+
+The supported voice command on the managed list page are:
 - "Add milk" or "Add milk to list"
 - "Put apple on the list" 
 
