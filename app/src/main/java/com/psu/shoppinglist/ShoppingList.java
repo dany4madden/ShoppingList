@@ -3,10 +3,6 @@ package com.psu.shoppinglist;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * Created by dany on 11/8/16.
- */
-
 public class ShoppingList {
     String listname; // listname (is filename) without .txt
     List <String> items; // TODO: make thia s list of <Item>

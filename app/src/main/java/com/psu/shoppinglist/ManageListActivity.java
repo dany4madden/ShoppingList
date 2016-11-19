@@ -53,6 +53,15 @@ public class ManageListActivity extends AppCompatActivity {
     private static final int SPEECH_REQUEST_CODE = 0;
     TextToSpeech t1;
     int numItem;
+
+    String menuHelp = "This is the Manage List Activity page. \n\nYou can Add, Remove, Count items, Or go back to the Main Menu." +
+            "Use the following commands: " +
+            "\n\n\t- Add apples." +
+            "\n\t- Remove apples." +
+            "\n\t- Count items." +
+            "\n\t- Back to Main Menu." +
+            "\n\nThese functions are also accessible from the overflow menu.";
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -576,7 +585,7 @@ public class ManageListActivity extends AppCompatActivity {
             case R.id.about:
                 final AlertDialog.Builder aboutDialog = new AlertDialog.Builder(this);
                 aboutDialog.setTitle("About List Buddy");
-                aboutDialog.setMessage("Copyright (c) 2016.\nGustaf Hegnell and Dany madden.\n");
+                aboutDialog.setMessage("Copyright (c) 2016.\n\t\tDany madden.\n\t\tGustaf Hegnell.");
 
                 aboutDialog.setNeutralButton("Dismiss", new DialogInterface.OnClickListener() {
                     @Override
@@ -587,6 +596,21 @@ public class ManageListActivity extends AppCompatActivity {
                 aboutDialog.create();
                 aboutDialog.show();
 
+                return true;
+
+            case R.id.help:
+                final AlertDialog.Builder helpDialog = new AlertDialog.Builder(this);
+                helpDialog.setTitle("Manage List Activity Help:");
+                helpDialog.setMessage(menuHelp);
+
+                helpDialog.setNeutralButton("Got it!", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        dialogInterface.dismiss();
+                    }
+                });
+                helpDialog.create();
+                helpDialog.show();
                 return true;
 
             case R.id.action_add:

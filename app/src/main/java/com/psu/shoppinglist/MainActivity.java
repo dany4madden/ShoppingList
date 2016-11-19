@@ -388,7 +388,7 @@ public class MainActivity extends AppCompatActivity {
             case R.id.about:
                 final AlertDialog.Builder aboutDialog = new AlertDialog.Builder(this);
                 aboutDialog.setTitle("About List Buddy");
-                aboutDialog.setMessage("Copyright (c) 2016.\nDany madden and Gustaf Hegnell\n");
+                aboutDialog.setMessage("Copyright (c) 2016.\n\t\tDany Madden.\n\t\tGustaf Hegnell.\n");
 
                 aboutDialog.setNeutralButton("Dismiss", new DialogInterface.OnClickListener() {
                     @Override

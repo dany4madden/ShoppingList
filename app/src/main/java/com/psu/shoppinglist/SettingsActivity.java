@@ -4,9 +4,6 @@ import android.os.Bundle;
 import android.preference.PreferenceActivity;
 import android.preference.PreferenceFragment;
 
-/**
- * Created by dany on 11/4/16.
- */
 public class SettingsActivity extends PreferenceActivity {
 
     @Override

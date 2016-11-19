@@ -20,15 +20,20 @@
         android:orderInCategory="130"
         app:showAsAction="never"/>
 
+    <item android:id="@+id/action_location"
+        android:icon="@android:drawable/ic_menu_compass"
+        android:title="Map"
+        app:showAsAction="always" />
+
     <item android:id="@+id/action_add"
         android:icon="@android:drawable/ic_menu_add"
         android:title="@string/action_add"
-        app:showAsAction="ifRoom" />
+        app:showAsAction="always" />
 
     <item android:id="@+id/action_speak"
         android:icon="@android:drawable/ic_btn_speak_now"
         android:title="Speak"
-        app:showAsAction="ifRoom" />
+        app:showAsAction="always" />
 
     <item
         android:id="@+id/exit"
