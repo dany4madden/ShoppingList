@@ -53,13 +53,16 @@ public class ManageListActivity extends AppCompatActivity {
     private static final int SPEECH_REQUEST_CODE = 0;
     TextToSpeech t1;
     int numItem;
+    Boolean noToast;
 
-    String menuHelp = "This is the Manage List Activity page. \n\nYou can Add, Remove, Count items, Or go back to the Main Menu." +
+    String menuHelp = "This is the Manage List Activity page. \n\nYou can Add, Remove, Count items, Or go back to the Main Menu. " +
             "Use the following commands: " +
             "\n\n\t- Add apples." +
             "\n\t- Remove apples." +
             "\n\t- Count items." +
             "\n\t- Back to Main Menu." +
+            "\n\t- Exit." +
+            "\n\t- Who created this app?" +
             "\n\nThese functions are also accessible from the overflow menu.";
 
     @Override
@@ -138,6 +141,7 @@ public class ManageListActivity extends AppCompatActivity {
                         if (response.isEmpty())
                             response = "The A.I. was not able to determine the intent. Please try a different command.";
                     } else {
+                        noToast = false;
                         switch (intent) {
                             case "addItem":
                                 response = vAddItem(result);
@@ -152,15 +156,38 @@ public class ManageListActivity extends AppCompatActivity {
                             case "goBackMain":
                                 finish();
                                 break;
-                            //case "open":
-                            //    response = vOpenItem(result);
-                            //    break;
+
+                            case "about":
+                                getAbout();
+                                // Need to make sure that the text to speech pronounces names correctly.
+                                response = "This app is developed by: Danny Madden and Gustaf Hegnell.";
+                                noToast = true;
+                                break;
+                            case "exit":
+                                doExit();
+                                break;
+
+                            case "help":
+                                getHelp();
+                                response = "Managing list activity. You can Add, Remove, Count items, Or go back to the Main Menu.\n" +
+                                        "Supported commands are:\n " +
+                                        "- Add apples.\n" +
+                                        "- Remove apples.\n" +
+                                        "- Count items.\n" +
+                                        "- Back to Main Menu.\n" +
+                                        "- Exit.\n Or \n" +
+                                        "- Who created this app? \n";
+                                noToast = true;
+                                break;
+
                             default:
                                 response = "I heard: " + result.getResolvedQuery() + ". I don't know what to do with that.";
                         }
                     }
-                    for (int p = 0; p < 2; p++) {
-                        Toast.makeText(getApplicationContext(), response, Toast.LENGTH_LONG).show();
+                    if (noToast == false) {
+                        for (int p = 0; p < 2; p++) {
+                            Toast.makeText(getApplicationContext(), response, Toast.LENGTH_LONG).show();
+                        }
                     }
                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
                         t1.speak(response, TextToSpeech.QUEUE_FLUSH, null, null);
@@ -291,12 +318,20 @@ public class ManageListActivity extends AppCompatActivity {
     public String vCountItem (Result result) {
         String respond = "";
         if (numItem == 0)
-            respond = "You do not have any list.";
+            respond = "You do not have any item on the " + listName + " list";
         else
             respond = "You have " + numItem +" items on the " + listName + " list.";
         return respond;
     }
 
+    public String countItem() {
+        String respond;
+        if (numItem == 0)
+            respond = "You do not have any item on the " + listName + " list";
+        else
+            respond = "You have " + numItem +" items on the " + listName + " list.";
+        return respond;
+    }
 
     // Read in the file list
     public void listItems() {
@@ -568,6 +603,46 @@ public class ManageListActivity extends AppCompatActivity {
 
     }
 
+    public void getAbout() {
+        final AlertDialog.Builder aboutDialog = new AlertDialog.Builder(this);
+        aboutDialog.setTitle("About List Buddy");
+        aboutDialog.setMessage("Copyright (c) 2016.\n\t\tDany madden.\n\t\tGustaf Hegnell.");
+
+        aboutDialog.setNeutralButton("Dismiss", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+                dialogInterface.dismiss();
+            }
+        });
+        aboutDialog.create();
+        aboutDialog.show();
+    }
+
+    public void getHelp() {
+        final AlertDialog.Builder helpDialog = new AlertDialog.Builder(this);
+        helpDialog.setTitle("Manage List Activity Help:");
+        helpDialog.setMessage(menuHelp);
+
+        helpDialog.setNeutralButton("Got it!", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+                dialogInterface.dismiss();
+            }
+        });
+        helpDialog.create();
+        helpDialog.show();
+    }
+
+    public void doExit() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            t1.speak("Goodbye!... ", TextToSpeech.QUEUE_FLUSH, null, null);
+        } else
+            t1.speak("Goodbye!... ", TextToSpeech.QUEUE_FLUSH, null);
+
+        finish();
+        System.exit(0);
+    }
+
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
@@ -578,39 +653,16 @@ public class ManageListActivity extends AppCompatActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
 
         switch (item.getItemId()) {
-            case R.id.settings:
-                startActivity(new Intent(this, SettingsActivity.class));
-                return true;
+            //case R.id.settings:
+            //    startActivity(new Intent(this, SettingsActivity.class));
+            //    return true;
 
             case R.id.about:
-                final AlertDialog.Builder aboutDialog = new AlertDialog.Builder(this);
-                aboutDialog.setTitle("About List Buddy");
-                aboutDialog.setMessage("Copyright (c) 2016.\n\t\tDany madden.\n\t\tGustaf Hegnell.");
-
-                aboutDialog.setNeutralButton("Dismiss", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialogInterface, int i) {
-                        dialogInterface.dismiss();
-                    }
-                });
-                aboutDialog.create();
-                aboutDialog.show();
-
+                getAbout();
                 return true;
 
             case R.id.help:
-                final AlertDialog.Builder helpDialog = new AlertDialog.Builder(this);
-                helpDialog.setTitle("Manage List Activity Help:");
-                helpDialog.setMessage(menuHelp);
-
-                helpDialog.setNeutralButton("Got it!", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialogInterface, int i) {
-                        dialogInterface.dismiss();
-                    }
-                });
-                helpDialog.create();
-                helpDialog.show();
+                getHelp();
                 return true;
 
             case R.id.action_add:
@@ -621,16 +673,21 @@ public class ManageListActivity extends AppCompatActivity {
                 promptSpeechInput();
                 return true;
 
-            case R.id.exit:
-               /* if (!muteVoice) {
-                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                        t1.speak("Goodbye!... ", TextToSpeech.QUEUE_FLUSH, null, null);
-                    } else
-                        t1.speak("Goodbye!... ", TextToSpeech.QUEUE_FLUSH, null);
-                */
-                finish();
-                System.exit(0);
+            case R.id.count:
+                String res = countItem();
+                for (int p = 0; p < 2; p++) {
+                    Toast.makeText(getApplicationContext(), res, Toast.LENGTH_LONG).show();
+                }
 
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                    t1.speak(res, TextToSpeech.QUEUE_FLUSH, null, null);
+                } else
+                    t1.speak(res, TextToSpeech.QUEUE_FLUSH, null);
+
+                return true;
+
+            case R.id.exit:
+                doExit();
                 return true;
 
             default:
@@ -640,10 +697,6 @@ public class ManageListActivity extends AppCompatActivity {
 
     @Override
     public void onPause() {
-        /*if (t1!=null) {
-        	t1.stop();
-        	t1.shutdown();
-        }*/
         super.onPause();
     }
 

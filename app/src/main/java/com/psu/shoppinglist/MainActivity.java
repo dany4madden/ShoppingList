@@ -180,17 +180,45 @@ public class MainActivity extends AppCompatActivity {
                         switch (intent) {
                             case "addList":
                                 response = vCreateAList(result);
+                                noToast = false;
                                 break;
                             case "removeList":
                                 response = vRemoveAList(result);
                                 doShowLists();
+                                noToast = false;
                                 break;
                             case "count":
                                 response = vCountList(result);
+                                noToast = false;
                                 break;
                             case "openList":
                                 response = vOpenList(result);
                                 noToast = true;
+                                break;
+                            case "help":
+                                getHelp();
+                                response = "Main Activity. You can Create, Delete, Count, or Open any existing list by saying one" +
+                                        " of the following commands: " +
+                                            "- Create Safeway list\n" +
+                                            "- Delete Safeway list\n" +
+                                            "- Open Safeway list\n" +
+                                            "- Count lists \n" +
+                                            "- Or Exit.\n";
+                                noToast = true;
+                                break;
+                            case "exit":
+                                doExit();
+                                break;
+                            case "about":
+                                getAbout();
+                                // Need to make sure that the text to speech pronounces names correctly.
+                                response = "This app is developed by: Danny Madden and Gustaf Hegnell.";
+                                noToast = true;
+                                break;
+
+                            case "goBackMain":
+                                response = "I cannot back up anymore. This is the main activity page. If you want to quit say Exit.";
+                                noToast = false;
                                 break;
                             default:
                                 response = "I heard: " + result.getResolvedQuery() +". I don't know what to do with that." ;
@@ -322,6 +350,45 @@ public class MainActivity extends AppCompatActivity {
         return respond;
     }
 
+    public void getHelp() {
+        final AlertDialog.Builder helpDialog = new AlertDialog.Builder(this);
+        helpDialog.setTitle("List Buddy Help:");
+        helpDialog.setMessage(mainMenuHelp);
+
+        helpDialog.setNeutralButton("Got it!", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+                dialogInterface.dismiss();
+            }
+        });
+        helpDialog.create();
+        helpDialog.show();
+    }
+
+    public void doExit(){
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            t1.speak("Goodbye!... ", TextToSpeech.QUEUE_FLUSH, null, null);
+        } else {
+            t1.speak("Goodbye!... ", TextToSpeech.QUEUE_FLUSH, null);
+        }
+        finish();
+        System.exit(0);
+    }
+
+    public void getAbout() {
+        final AlertDialog.Builder aboutDialog = new AlertDialog.Builder(this);
+        aboutDialog.setTitle("About List Buddy");
+        aboutDialog.setMessage("Copyright (c) 2016.\n\t\tDany Madden.\n\t\tGustaf Hegnell.\n");
+
+        aboutDialog.setNeutralButton("Dismiss", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+                dialogInterface.dismiss();
+            }
+        });
+        aboutDialog.create();
+        aboutDialog.show();
+    }
     public void debug_print_list_file() {
         File f = this.getFilesDir();
         File [] files = f.listFiles();
@@ -329,6 +396,15 @@ public class MainActivity extends AppCompatActivity {
         for (File a: files) {
             Log.v ("debug_print_file", a.getName() + ".");
         }
+    }
+
+    public String countList () {
+        String respond;
+        if (numList == 0)
+            respond = "You do not have any list.";
+        else
+            respond = "You have " + numList +" lists total. To hear the number of item on each list, open up the list first.";
+        return respond;
     }
 
     // Adding a new list
@@ -386,35 +462,11 @@ public class MainActivity extends AppCompatActivity {
                 return true;
 
             case R.id.about:
-                final AlertDialog.Builder aboutDialog = new AlertDialog.Builder(this);
-                aboutDialog.setTitle("About List Buddy");
-                aboutDialog.setMessage("Copyright (c) 2016.\n\t\tDany Madden.\n\t\tGustaf Hegnell.\n");
-
-                aboutDialog.setNeutralButton("Dismiss", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialogInterface, int i) {
-                        dialogInterface.dismiss();
-                    }
-                });
-                aboutDialog.create();
-                aboutDialog.show();
-
+                getAbout();
                 return true;
 
             case R.id.help:
-                final AlertDialog.Builder helpDialog = new AlertDialog.Builder(this);
-                helpDialog.setTitle("List Buddy Help:");
-                helpDialog.setMessage(mainMenuHelp);
-
-                helpDialog.setNeutralButton("Got it!", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialogInterface, int i) {
-                        dialogInterface.dismiss();
-                    }
-                });
-                helpDialog.create();
-                helpDialog.show();
-
+                getHelp();
                 return true;
 
             case R.id.action_add:
@@ -426,16 +478,21 @@ public class MainActivity extends AppCompatActivity {
                 return true;
 
             case R.id.exit:
-                if (!muteVoice) {
-                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                        t1.speak("Goodbye!... ", TextToSpeech.QUEUE_FLUSH, null, null);
-                    } else
-                        t1.speak("Goodbye!... ", TextToSpeech.QUEUE_FLUSH, null);
-                }
-                finish();
-                System.exit(0);
-
+                doExit();
                 return true;
+
+            case R.id.count:
+                String res = countList();
+
+                for (int p = 0; p < 2; p++) {
+                    Toast.makeText(getApplicationContext(), res, Toast.LENGTH_LONG).show();
+                }
+
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                    t1.speak(res, TextToSpeech.QUEUE_FLUSH, null, null);
+                } else
+                    t1.speak(res, TextToSpeech.QUEUE_FLUSH, null);
+
 
             default:
                 return super.onOptionsItemSelected(item);
@@ -490,33 +547,38 @@ public class MainActivity extends AppCompatActivity {
         Collections.sort(SHOPPINGLIST); // Alphabetize the list.
         numList = counted;
 
+        if (SHOPPINGLIST.isEmpty()) {
+            SHOPPINGLIST.add("no list");
+        }
+
         ArrayAdapter adapter = new ArrayAdapter<String>(this,R.layout.content_main,SHOPPINGLIST);
         ListView listView = (ListView) findViewById(R.id.list_list);
         listView.setAdapter(adapter);
+        if (!SHOPPINGLIST.contains("no list")) {
+            listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                @Override
+                public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+                    // Open file (list) and create a ShoppingList and display items.
+                    String listName = ((TextView) view).getText().toString();
 
-        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-                // Open file (list) and create a ShoppingList and display items.
-                String listName = ((TextView) view).getText().toString();
+                    showListItems(listName);
 
-                showListItems(listName);
+                    // Toast.makeText(getApplicationContext(), ((TextView) view).getText(), Toast.LENGTH_LONG).show();
+                }
+            });
 
-                // Toast.makeText(getApplicationContext(), ((TextView) view).getText(), Toast.LENGTH_LONG).show();
-            }
-        });
+            // long click we remove the list from app
+            listView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
+                @Override
+                public boolean onItemLongClick(AdapterView<?> adapterView, View view, int i, long l) {
+                    String selected = ((TextView) view).getText().toString();
+                    removeList(selected);
 
-        // long click we remove the list from app
-        listView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
-            @Override
-            public boolean onItemLongClick(AdapterView<?> adapterView, View view, int i, long l) {
-                String selected = ((TextView)view).getText().toString();
-                removeList(selected);
-
-                return true;
-            }
-        });
-        debug_print_list_file();
+                    return true;
+                }
+            });
+            // debug_print_list_file();
+        }
     }
 
     // remove list from App

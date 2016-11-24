@@ -9,5 +9,5 @@
     <string name="list_item">List Item</string>
     <string name="action_help">Help</string>
     <string name="action_speak">Speak</string>
-
+    <string name="action_count">Count</string>
 </resources>
