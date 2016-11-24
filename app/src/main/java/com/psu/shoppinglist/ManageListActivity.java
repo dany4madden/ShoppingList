@@ -639,7 +639,7 @@ public class ManageListActivity extends AppCompatActivity {
         } else
             t1.speak("Goodbye!... ", TextToSpeech.QUEUE_FLUSH, null);
 
-        finish();
+        finishAffinity();
         System.exit(0);
     }
 

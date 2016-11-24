@@ -371,8 +371,12 @@ public class MainActivity extends AppCompatActivity {
         } else {
             t1.speak("Goodbye!... ", TextToSpeech.QUEUE_FLUSH, null);
         }
+        while (t1.isSpeaking()) {
+            // wait...
+        }
         finish();
         System.exit(0);
+
     }
 
     public void getAbout() {
