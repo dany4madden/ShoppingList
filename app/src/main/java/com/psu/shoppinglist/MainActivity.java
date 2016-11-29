@@ -193,6 +193,10 @@ public class MainActivity extends AppCompatActivity {
                                 response = vOpenList(result);
                                 noToast = true;
                                 break;
+                            case "addItem":
+                                response = vAddItem(result);
+                                noToast = true;
+                                break;
                             case "help":
                                 getHelp();
                                 response = "Main Activity. You can Create, Delete, Count, or Open any existing list by saying one" +
@@ -267,6 +271,37 @@ public class MainActivity extends AppCompatActivity {
             }
         }
         return respond;
+    }
+
+    public String vAddItem(Result result) {
+        String response = "";
+        String listName = result.getStringParameter("listName");
+
+        if (listName.isEmpty()) {
+            return "You did not provide a list to add that item to.";
+        } else {
+            Bundle b = new Bundle();
+            Intent i = new Intent(this, ManageListActivity.class);
+
+            if (!fileExists(listName)) {
+                try {
+                    String fname = listName.substring(0, 1).toUpperCase() +
+                            listName.substring(1);
+                    FileOutputStream fos = openFileOutput(fname + ".txt", Context.MODE_PRIVATE);
+                    fos.close();
+                    doShowLists();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+            b.putString("listName", listName);
+            i.putExtras(b);
+            i.putExtra("methodName","addItem");
+            i.putExtra("item", result.getStringParameter("itemName"));
+
+            startActivity(i);
+        }
+        return response;
     }
 
     public String vCountList (Result result) {

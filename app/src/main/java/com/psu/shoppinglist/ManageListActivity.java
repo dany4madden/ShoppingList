@@ -68,15 +68,20 @@ public class ManageListActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_manage_list);
-        listName = getIntent().getExtras().getString("listName", "Error");
+        Intent intent = getIntent();
+        listName = intent.getExtras().getString("listName", "Error");
         sl = new ShoppingList(listName, null);
-
-
         setTitle(listName);
-        initializeSpeech(listName);
 
-        // reveal listname content
-        listItems();
+        if(getIntent().getStringExtra("methodName") != null){
+            String item = intent.getStringExtra("item");
+            String result = addItem(item);
+            listItems();
+            initializeSpeech(result, true);
+        } else {
+            initializeSpeech(listName, false);
+            listItems();
+        }
     }
 
     /**
@@ -198,6 +203,37 @@ public class ManageListActivity extends AppCompatActivity {
                 }
             }
         }.execute(aiRequest);
+    }
+
+    public String addItem(String itemName) {
+        String respond = "";
+
+        // check itemName
+        if (!itemName.isEmpty()) {
+            String inputString = itemName.trim();
+            if (inputString != null && !inputString.isEmpty()) {
+                // Capitalize the first letter
+                String theItem = inputString.trim().substring(0, 1).toUpperCase() +
+                        inputString.trim().substring(1) + "\n";
+
+                if (!itemIsInList(theItem)) {
+                    try {
+                        FileOutputStream fos = openFileOutput(sl.listname + ".txt", Context.MODE_APPEND);
+                        fos.write(theItem.getBytes());
+                        fos.close();
+                        listItems();
+                        respond = "Ok. " + itemName + " has been added to " + listName + " list.";
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                } else {
+                    respond = itemName + " is already on your " + listName + " list.";
+                }
+            }
+        } else {
+            respond = "Add item to "+ listName + " failed.";
+        }
+        return respond;
     }
 
     // we can only add item to the listName that was given when we start
@@ -391,8 +427,13 @@ public class ManageListActivity extends AppCompatActivity {
         startActivityForResult(intent, SPEECH_REQUEST_CODE);
     }
 
-    public void initializeSpeech (String name) {
-        final String welcome = "Ok, managing " + name + " list.";
+    public void initializeSpeech (String name, boolean item) {
+        final String welcome;
+        if (item) {
+            welcome = name;
+        } else {
+            welcome = "Ok, managing " + name + " list.";
+        }
 
         t1 = new TextToSpeech(this, new TextToSpeech.OnInitListener() {
             @Override
