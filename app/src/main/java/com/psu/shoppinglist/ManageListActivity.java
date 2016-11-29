@@ -46,7 +46,6 @@ import com.google.gson.JsonElement;
 
 
 public class ManageListActivity extends AppCompatActivity {
-    boolean muteVoice;
     String listName;
     ShoppingList sl;
     final int MAX_NUM_ITEMS = 100; //allow a max of 100 items on the list!
@@ -69,7 +68,6 @@ public class ManageListActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_manage_list);
-        //muteVoice = getIntent().getExtras().getBoolean("muteVice", false);
         listName = getIntent().getExtras().getString("listName", "Error");
         sl = new ShoppingList(listName, null);
 
@@ -97,7 +95,7 @@ public class ManageListActivity extends AppCompatActivity {
 
     protected void makeAPIRequest(String speech) {
 
-        Log.v ("----API req:", speech + ".");
+        //Log.v ("----API req:", speech + ".");
         final AIRequest aiRequest = new AIRequest();
         final AIConfiguration config = new AIConfiguration("903fe05ba6064111aed341dc9c051e59",
                 AIConfiguration.SupportedLanguages.English,
@@ -114,6 +112,7 @@ public class ManageListActivity extends AppCompatActivity {
                     final AIResponse response = aiDataService.request(aiRequest);
                     return response;
                 } catch (AIServiceException e) {
+                    e.printStackTrace();
                 }
                 return null;
             }
@@ -132,14 +131,14 @@ public class ManageListActivity extends AppCompatActivity {
 
                     // Need to decide what to do with our response:
                     String intent = result.getMetadata().getIntentName();
-                    String response = "";
-                    Log.v ("-----------API: ", intent + ".");
+                    String response = " ";
+                    //Log.v ("-----------API: ", intent + ".");
 
                     if (intent == null) {
                         // making use of API.IA's cleverness!
                         response = result.getFulfillment().getSpeech();
                         if (response.isEmpty())
-                            response = "The A.I. was not able to determine the intent. Please try a different command.";
+                            response = "Hmmmmm. I didn't get what you wanted me to do.";
                     } else {
                         noToast = false;
                         switch (intent) {
@@ -185,8 +184,10 @@ public class ManageListActivity extends AppCompatActivity {
                         }
                     }
                     if (noToast == false) {
-                        for (int p = 0; p < 2; p++) {
-                            Toast.makeText(getApplicationContext(), response, Toast.LENGTH_LONG).show();
+                        if (!response.contentEquals(" ")) {
+                            for (int p = 0; p < 2; p++) {
+                                Toast.makeText(getApplicationContext(), response, Toast.LENGTH_LONG).show();
+                            }
                         }
                     }
                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
@@ -235,7 +236,7 @@ public class ManageListActivity extends AppCompatActivity {
                     }
                 }
             } else {
-                respond = "Add item to "+ listName + " failed. A.I. did not return an item to me because the item is likely not in A.I's domain.";
+                respond = "Add item to "+ listName + " failed.";
             }
         }
 
@@ -274,7 +275,7 @@ public class ManageListActivity extends AppCompatActivity {
                                 if (!line.isEmpty() && !line.contentEquals(theItem)) {
                                     fos.write(line.getBytes());
                                     fos.write("\n".getBytes());
-                                    Log.v("vRemoveItem----", "unmatched " + line + "." + theItem + ".");
+                                    //Log.v("vRemoveItem----", "unmatched " + line + "." + theItem + ".");
 
                                 }
                                 line = buffReader.readLine();
@@ -291,7 +292,7 @@ public class ManageListActivity extends AppCompatActivity {
                             oldFile.delete();
                             if (special != null && special.exists()) {
                                 Boolean status = special.renameTo(oldFile);
-                                Log.v("RemoveAnItem:", "rname file status: " + status);
+                                //Log.v("RemoveAnItem:", "rname file status: " + status);
                             } else
                                 Log.v("RemoveAnItem:", "rename special doesn't exist?!");
                         }
@@ -308,7 +309,7 @@ public class ManageListActivity extends AppCompatActivity {
                 }
             }
             else {
-                respond = "Failed to remove. A.I. didn't return an item name because likely item isn't in the A.I.'s domain";
+                respond = "Failed to remove.";
             }
         }
 
@@ -404,11 +405,11 @@ public class ManageListActivity extends AppCompatActivity {
                     }
                     Toast.makeText(getApplicationContext(), welcome, Toast.LENGTH_SHORT).show();
 
-                    if (!muteVoice) {
-                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                            t1.speak(welcome, TextToSpeech.QUEUE_FLUSH, null, null);
-                        } else
-                            t1.speak(welcome.toString(), TextToSpeech.QUEUE_FLUSH, null);
+
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                        t1.speak(welcome, TextToSpeech.QUEUE_FLUSH, null, null);
+                    } else {
+                        t1.speak(welcome.toString(), TextToSpeech.QUEUE_FLUSH, null);
                     }
                 } else
                     Log.v("DEBUG", "TTS failed to start");
@@ -473,7 +474,7 @@ public class ManageListActivity extends AppCompatActivity {
                 while (line != null ){
 
                     if (line.contentEquals(s.replace("\n", ""))) {
-                        Log.v ("itemIsInList:", "found " + s.replace("\n", ""));
+                        //Log.v ("itemIsInList:", "found " + s.replace("\n", ""));
                         is.close();
                         return true;
                     }
@@ -561,7 +562,7 @@ public class ManageListActivity extends AppCompatActivity {
         File file = getApplicationContext().getFilesDir();
         File [] files = file.listFiles();
         for (File f: files) {
-            Log.v ("myGetFile:", f.getName());
+            //Log.v ("myGetFile:", f.getName());
             if (f.getName().equalsIgnoreCase(s +".txt")) {
                 return f;
             }
@@ -573,7 +574,7 @@ public class ManageListActivity extends AppCompatActivity {
         File file = getApplicationContext().getFilesDir();
         File [] files = file.listFiles();
         for (File f: files) {
-            Log.v ("deleteAFile:", f.getName());
+            //Log.v ("deleteAFile:", f.getName());
             if (f.getName().equalsIgnoreCase(s +".txt")) {
                 f.delete();
                 return true;
@@ -591,7 +592,7 @@ public class ManageListActivity extends AppCompatActivity {
                 BufferedReader buffReader = new BufferedReader(inputReader);
                 String line = buffReader.readLine();
                 while (line != null) {
-                    Log.v ("debugPrtintListContent", s + " has " + line + ".");
+                    //Log.v ("debugPrtintListContent", s + " has " + line + ".");
                     line = buffReader.readLine();
                 }
                 is.close();
@@ -710,7 +711,6 @@ public class ManageListActivity extends AppCompatActivity {
     }
     @Override
     public void onResume(){
-        //muteVoice = sharedPrefs.getBoolean("checkBoxVoice", false);
         super.onResume();
     }
 }

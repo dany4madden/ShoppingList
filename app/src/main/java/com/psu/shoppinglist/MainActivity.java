@@ -60,12 +60,11 @@ public class MainActivity extends AppCompatActivity {
                     "\n\t- Count lists." +
                     "\n\nThese functions are also accessible from the overflow menu.";
 
-    private SharedPreferences sharedPrefs;
-    Boolean muteVoice;
+    //private SharedPreferences sharedPrefs;
+    //Boolean muteVoice;
     File [] files;
     private static final int SPEECH_REQUEST_CODE = 0;
     int numList = 0;
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -75,9 +74,9 @@ public class MainActivity extends AppCompatActivity {
         setSupportActionBar(toolbar);
 
         // check muteVoice
-        PreferenceManager.setDefaultValues(this, R.xml.fragment_settings, false);
-        sharedPrefs = PreferenceManager.getDefaultSharedPreferences(this);
-        muteVoice = sharedPrefs.getBoolean("checkBoxVoice", false);
+        //PreferenceManager.setDefaultValues(this, R.xml.fragment_settings, false);
+        //sharedPrefs = PreferenceManager.getDefaultSharedPreferences(this);
+        //muteVoice = sharedPrefs.getBoolean("checkBoxVoice", false);
 
         initializeSpeech();
         doShowLists();
@@ -96,12 +95,12 @@ public class MainActivity extends AppCompatActivity {
                     }
                     Toast.makeText(getApplicationContext(), welcome, Toast.LENGTH_SHORT).show();
 
-                    if (!muteVoice) {
-                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                            t1.speak(welcome, TextToSpeech.QUEUE_FLUSH, null, null);
-                        } else
-                            t1.speak(welcome.toString(), TextToSpeech.QUEUE_FLUSH, null);
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                        t1.speak(welcome, TextToSpeech.QUEUE_FLUSH, null, null);
+                    } else {
+                        t1.speak(welcome.toString(), TextToSpeech.QUEUE_FLUSH, null);
                     }
+
                 } else
                     Log.v("DEBUG", "TTS failed to start");
             }
@@ -132,7 +131,7 @@ public class MainActivity extends AppCompatActivity {
 
     protected void makeAPIRequest(String speech) {
 
-        Log.v ("----API req:", speech + ".");
+        //Log.v ("----API req:", speech + ".");
         final AIRequest aiRequest = new AIRequest();
         final AIConfiguration config = new AIConfiguration("903fe05ba6064111aed341dc9c051e59",
                 AIConfiguration.SupportedLanguages.English,
@@ -154,10 +153,9 @@ public class MainActivity extends AppCompatActivity {
             }
             @Override
             protected void onPostExecute(AIResponse aiResponse) {
-                Boolean noToast = false;
                 if (aiResponse != null) {
                     Result result = aiResponse.getResult();
-
+                    Boolean noToast = false;
                     // Get parameters
                     String parameterString = "";
                     if (result.getParameters() != null && !result.getParameters().isEmpty()) {
@@ -168,14 +166,14 @@ public class MainActivity extends AppCompatActivity {
 
                     // Need to decide what to do with our response:
                     String intent = result.getMetadata().getIntentName();
-                    String response = "";
-                    Log.v ("-----------API: ", intent + ".");
+                    String response = " ";
+                    //Log.v ("-----------API: ", intent + ".");
 
                     if (intent == null) {
                         // making use of API.IA's cleverness!
                         response = result.getFulfillment().getSpeech();
                         if (response.isEmpty())
-                            response = "The A.I. was not able to determine the intent. Please try a different command.";
+                            response = "I didn't get what you wanted me to do.";
                     } else {
                         switch (intent) {
                             case "addList":
@@ -225,8 +223,10 @@ public class MainActivity extends AppCompatActivity {
                         }
                     }
                     if (noToast == false) {
-                        for (int p = 0; p < 2; p++) {
-                            Toast.makeText(getApplicationContext(), response, Toast.LENGTH_LONG).show();
+                        if (!response.contentEquals(" ")) {
+                            for (int p = 0; p < 2; p++) {
+                                Toast.makeText(getApplicationContext(), response, Toast.LENGTH_LONG).show();
+                            }
                         }
                     }
                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
@@ -293,7 +293,7 @@ public class MainActivity extends AppCompatActivity {
                 listName = listName.trim();
                 String fname = listName.substring(0, 1).toUpperCase() +
                         listName.substring(1);
-                debug_print_list_file();
+                //debug_print_list_file();
 
                 for (File a : files) {
                     if (a.getName().contentEquals(fname+".txt")) {
@@ -304,12 +304,12 @@ public class MainActivity extends AppCompatActivity {
                         }
 
                     } else {
-                        respond = "??? Unable to delete. You don't have a " + fname + " list.";
+                        respond = "Hmmmmm. I am having trouble with this one. I can't find a " + fname + " list.";
                     }
                 }
             }
             else {
-                respond = "Unable to delete. A.I. did not return a list name to me.";
+                respond = "I didn't get a list name.";
             }
         }
         return respond;
@@ -345,7 +345,7 @@ public class MainActivity extends AppCompatActivity {
                     }
                 }
             } else
-                respond = "List creation failed. A.I didn't return a list name to me because list name is likely not in the A.I's domain.";
+                respond = "List creation failed.";
         }
         return respond;
     }
@@ -496,8 +496,6 @@ public class MainActivity extends AppCompatActivity {
                     t1.speak(res, TextToSpeech.QUEUE_FLUSH, null, null);
                 } else
                     t1.speak(res, TextToSpeech.QUEUE_FLUSH, null);
-
-
             default:
                 return super.onOptionsItemSelected(item);
         }
@@ -505,10 +503,6 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
 	public void onPause() {
-		//if (t1!=null) {
-		//	t1.stop();
-		//	t1.shutdown();
-		//}
 		super.onPause();
 	}
 
@@ -522,7 +516,6 @@ public class MainActivity extends AppCompatActivity {
     }
     @Override
     public void onResume(){
-        //muteVoice = sharedPrefs.getBoolean("checkBoxVoice", false);
         super.onResume();
     }
 
@@ -623,7 +616,7 @@ public class MainActivity extends AppCompatActivity {
         Intent i = new Intent(this, ManageListActivity.class);
 
         b.putString("listName", listName);
-        b.putBoolean("muteVoice", muteVoice);
+        //b.putBoolean("muteVoice", muteVoice);
         i.putExtras(b);
         //i.putExtra("files", files);
 
