@@ -193,11 +193,16 @@ public class MainActivity extends AppCompatActivity {
                                 response = vOpenList(result);
                                 noToast = true;
                                 break;
+                            case "addItem":
+                                response = vAddItem(result);
+                                noToast = true;
+                                break;
                             case "help":
                                 getHelp();
                                 response = "Main Activity. You can Create, Delete, Count, or Open any existing list by saying one" +
                                         " of the following commands: " +
                                             "- Create Safeway list\n" +
+                                            "- Add Apples to Safeway list\n" +
                                             "- Delete Safeway list\n" +
                                             "- Open Safeway list\n" +
                                             "- Count lists \n" +
@@ -215,7 +220,7 @@ public class MainActivity extends AppCompatActivity {
                                 break;
 
                             case "goBackMain":
-                                response = "I cannot back up anymore. This is the main activity page. If you want to quit say Exit.";
+                                response = "I can not back up anymore. This is the main activity page. If you want to quit say Exit.";
                                 noToast = false;
                                 break;
                             default:
@@ -269,12 +274,43 @@ public class MainActivity extends AppCompatActivity {
         return respond;
     }
 
+    public String vAddItem(Result result) {
+        String response = "";
+        String listName = result.getStringParameter("listName");
+
+        if (listName.isEmpty()) {
+            return "You did not provide a list to add that item to.";
+        } else {
+            Bundle b = new Bundle();
+            Intent i = new Intent(this, ManageListActivity.class);
+
+            if (!fileExists(listName)) {
+                try {
+                    String fname = listName.substring(0, 1).toUpperCase() +
+                            listName.substring(1);
+                    FileOutputStream fos = openFileOutput(fname + ".txt", Context.MODE_PRIVATE);
+                    fos.close();
+                    doShowLists();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+            b.putString("listName", listName);
+            i.putExtras(b);
+            i.putExtra("methodName","addItem");
+            i.putExtra("item", result.getStringParameter("itemName"));
+
+            startActivity(i);
+        }
+        return response;
+    }
+
     public String vCountList (Result result) {
         String respond = "";
         if (numList == 0)
-            respond = "You do not have any list.";
+            respond = "You do not have any lists.";
         else
-            respond = "You have " + numList +" lists total. To hear the number of item on each list, open up the list first.";
+            respond = "You have " + numList +" lists total. To hear the number of items on a particular list, open up the list first.";
         return respond;
     }
 
@@ -284,7 +320,7 @@ public class MainActivity extends AppCompatActivity {
         String respond = listName + " does not exist.";
 
         if (!itemName.isEmpty()) {
-            respond = "I am not that advanced yet. To delete and item from the list, you must open up the list first.";
+            respond = "I am not that advanced yet. To delete an item from the list, you must open up the list first.";
         }
         else {
             if (!listName.isEmpty()) {
@@ -405,7 +441,7 @@ public class MainActivity extends AppCompatActivity {
     public String countList () {
         String respond;
         if (numList == 0)
-            respond = "You do not have any list.";
+            respond = "You do not have any lists.";
         else
             respond = "You have " + numList +" lists total. To hear the number of item on each list, open up the list first.";
         return respond;
@@ -585,7 +621,7 @@ public class MainActivity extends AppCompatActivity {
         files = file.listFiles();
         final AlertDialog.Builder deleteDialog = new AlertDialog.Builder(this);
         deleteDialog.setTitle("Delete " + selected + " list?" );
-        deleteDialog.setMessage("You will lost all of its content.");
+        deleteDialog.setMessage("You will lose all of its content.");
 
         deleteDialog.setPositiveButton("OK", new DialogInterface.OnClickListener() {
             @Override
@@ -593,7 +629,7 @@ public class MainActivity extends AppCompatActivity {
                 for (int p = 0; p < files.length; p++) {
                     if (files[p].getName().contains(selected)) {
                         if (!files[p].delete())
-                            Toast.makeText(getApplicationContext(), "Couldn't delete" + files[p].getName(), Toast.LENGTH_LONG).show();
+                            Toast.makeText(getApplicationContext(), "Could not delete" + files[p].getName(), Toast.LENGTH_LONG).show();
                         else
                             doShowLists();
                     }

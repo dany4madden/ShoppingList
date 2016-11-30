@@ -68,15 +68,20 @@ public class ManageListActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_manage_list);
-        listName = getIntent().getExtras().getString("listName", "Error");
+        Intent intent = getIntent();
+        listName = intent.getExtras().getString("listName", "Error");
         sl = new ShoppingList(listName, null);
-
-
         setTitle(listName);
-        initializeSpeech(listName);
 
-        // reveal listname content
-        listItems();
+        if(getIntent().getStringExtra("methodName") != null){
+            String item = intent.getStringExtra("item");
+            String result = addItem(item);
+            listItems();
+            initializeSpeech(result, true);
+        } else {
+            initializeSpeech(listName, false);
+            listItems();
+        }
     }
 
     /**
@@ -120,6 +125,7 @@ public class ManageListActivity extends AppCompatActivity {
             protected void onPostExecute(AIResponse aiResponse) {
                 if (aiResponse != null) {
                     Result result = aiResponse.getResult();
+                    noToast = false;
 
                     // Get parameters
                 /*    String parameterString = "";
@@ -138,7 +144,7 @@ public class ManageListActivity extends AppCompatActivity {
                         // making use of API.IA's cleverness!
                         response = result.getFulfillment().getSpeech();
                         if (response.isEmpty())
-                            response = "Hmmmmm. I didn't get what you wanted me to do.";
+                            response = "Hmmmmm. I don't understand what you want me to do.";
                     } else {
                         noToast = false;
                         switch (intent) {
@@ -198,6 +204,37 @@ public class ManageListActivity extends AppCompatActivity {
                 }
             }
         }.execute(aiRequest);
+    }
+
+    public String addItem(String itemName) {
+        String respond = "";
+
+        // check itemName
+        if (!itemName.isEmpty()) {
+            String inputString = itemName.trim();
+            if (inputString != null && !inputString.isEmpty()) {
+                // Capitalize the first letter
+                String theItem = inputString.trim().substring(0, 1).toUpperCase() +
+                        inputString.trim().substring(1) + "\n";
+
+                if (!itemIsInList(theItem)) {
+                    try {
+                        FileOutputStream fos = openFileOutput(sl.listname + ".txt", Context.MODE_APPEND);
+                        fos.write(theItem.getBytes());
+                        fos.close();
+                        listItems();
+                        respond = "Ok. " + itemName + " has been added to " + listName + " list.";
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                } else {
+                    respond = itemName + " is already on your " + listName + " list.";
+                }
+            }
+        } else {
+            respond = "Add item to "+ listName + " failed.";
+        }
+        return respond;
     }
 
     // we can only add item to the listName that was given when we start
@@ -319,7 +356,7 @@ public class ManageListActivity extends AppCompatActivity {
     public String vCountItem (Result result) {
         String respond = "";
         if (numItem == 0)
-            respond = "You do not have any item on the " + listName + " list";
+            respond = "You do not have any items on the " + listName + " list";
         else
             respond = "You have " + numItem +" items on the " + listName + " list.";
         return respond;
@@ -328,7 +365,7 @@ public class ManageListActivity extends AppCompatActivity {
     public String countItem() {
         String respond;
         if (numItem == 0)
-            respond = "You do not have any item on the " + listName + " list";
+            respond = "You do not have any items on the " + listName + " list";
         else
             respond = "You have " + numItem +" items on the " + listName + " list.";
         return respond;
@@ -360,7 +397,7 @@ public class ManageListActivity extends AppCompatActivity {
         }
         sl.items = ITEMLIST;
         if (ITEMLIST.isEmpty()) {
-            ITEMLIST.add("no item");
+            ITEMLIST.add("no items");
         }
 
         Collections.sort(ITEMLIST);
@@ -373,7 +410,7 @@ public class ManageListActivity extends AppCompatActivity {
             @Override
             public boolean onItemLongClick(AdapterView<?> adapterView, View view, int i, long l) {
                 String selected = ((TextView)view).getText().toString();
-                if (!selected.contentEquals("no item"))
+                if (!selected.contentEquals("no items"))
                     removeAnItem(selected);
                 else
                     Toast.makeText(getApplicationContext(), "List is empty. Nothing to do.", Toast.LENGTH_LONG).show();
@@ -391,8 +428,13 @@ public class ManageListActivity extends AppCompatActivity {
         startActivityForResult(intent, SPEECH_REQUEST_CODE);
     }
 
-    public void initializeSpeech (String name) {
-        final String welcome = "Ok, managing " + name + " list.";
+    public void initializeSpeech (String name, boolean item) {
+        final String welcome;
+        if (item) {
+            welcome = name;
+        } else {
+            welcome = "Ok, managing " + name + " list.";
+        }
 
         t1 = new TextToSpeech(this, new TextToSpeech.OnInitListener() {
             @Override
