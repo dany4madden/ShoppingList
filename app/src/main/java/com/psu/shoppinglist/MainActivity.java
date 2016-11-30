@@ -340,7 +340,8 @@ public class MainActivity extends AppCompatActivity {
                         }
 
                     } else {
-                        respond = "Hmmmmm. I am having trouble with this one. I can't find a " + fname + " list.";
+                        //respond = "Hmmmmm. I am having trouble with this one. I can't find a " + fname + " list.";
+                        respond = "Ok. " + fname + " list is deleted.";
                     }
                 }
             }
