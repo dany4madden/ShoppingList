@@ -143,7 +143,7 @@ public class ManageListActivity extends AppCompatActivity {
                         // making use of API.IA's cleverness!
                         response = result.getFulfillment().getSpeech();
                         if (response.isEmpty())
-                            response = "Hmmmmm. I didn't get what you wanted me to do.";
+                            response = "Hmmmmm. I don't understand what you want me to do.";
                     } else {
                         noToast = false;
                         switch (intent) {
@@ -355,7 +355,7 @@ public class ManageListActivity extends AppCompatActivity {
     public String vCountItem (Result result) {
         String respond = "";
         if (numItem == 0)
-            respond = "You do not have any item on the " + listName + " list";
+            respond = "You do not have any items on the " + listName + " list";
         else
             respond = "You have " + numItem +" items on the " + listName + " list.";
         return respond;
@@ -364,7 +364,7 @@ public class ManageListActivity extends AppCompatActivity {
     public String countItem() {
         String respond;
         if (numItem == 0)
-            respond = "You do not have any item on the " + listName + " list";
+            respond = "You do not have any items on the " + listName + " list";
         else
             respond = "You have " + numItem +" items on the " + listName + " list.";
         return respond;
@@ -396,7 +396,7 @@ public class ManageListActivity extends AppCompatActivity {
         }
         sl.items = ITEMLIST;
         if (ITEMLIST.isEmpty()) {
-            ITEMLIST.add("no item");
+            ITEMLIST.add("no items");
         }
 
         Collections.sort(ITEMLIST);
@@ -409,7 +409,7 @@ public class ManageListActivity extends AppCompatActivity {
             @Override
             public boolean onItemLongClick(AdapterView<?> adapterView, View view, int i, long l) {
                 String selected = ((TextView)view).getText().toString();
-                if (!selected.contentEquals("no item"))
+                if (!selected.contentEquals("no items"))
                     removeAnItem(selected);
                 else
                     Toast.makeText(getApplicationContext(), "List is empty. Nothing to do.", Toast.LENGTH_LONG).show();
