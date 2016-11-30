@@ -125,6 +125,7 @@ public class ManageListActivity extends AppCompatActivity {
             protected void onPostExecute(AIResponse aiResponse) {
                 if (aiResponse != null) {
                     Result result = aiResponse.getResult();
+                    noToast = false;
 
                     // Get parameters
                 /*    String parameterString = "";
