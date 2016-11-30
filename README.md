@@ -1,7 +1,7 @@
 # ShoppingList
 
 Description:
-An Android app to create shopping lists with touch and voice commands.
+An Android app to create grocery shopping lists with touch and voice commands.
 
 Authors: Dany Madden and Gustaf Hegnell
 
@@ -13,7 +13,7 @@ Supported voice commands are:
 - "Open Costco list"
 - "Count lists"
 
-To get to the Managed list page, labeled with the list name, say "Open <listName>". Or simpily click on the list name. 
+To get to the Managed list page, labeled with the list name, say "Open listName". Or simpily click on the list name. 
 To delete a list or an item on the list with touch, touch and hold on to the list name/item for two seconds to activate the delete dialog. 
 
 The supported voice command on the managed list page are:
@@ -26,4 +26,12 @@ The supported voice command on the managed list page are:
 - "Count items"
 - "Go back to Main"
 
+The app also understand phrases like:
+- Exit
+- Who are you?
+- Thank you.
+- How old are you?
+- I'm bored.
+
+Try a few phrases and see how it resonds! Have fun.
 
