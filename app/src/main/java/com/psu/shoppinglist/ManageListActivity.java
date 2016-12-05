@@ -53,6 +53,7 @@ public class ManageListActivity extends AppCompatActivity {
     TextToSpeech t1;
     int numItem;
     Boolean noToast;
+    boolean guided = false;
 
     String menuHelp = "This is the Manage List Activity page. \n\nYou can Add, Remove, Count items, Or go back to the Main Menu. " +
             "Use the following commands: " +
@@ -79,8 +80,8 @@ public class ManageListActivity extends AppCompatActivity {
             listItems();
             initializeSpeech(result, true);
         } else {
-            initializeSpeech(listName, false);
             listItems();
+            initializeSpeech(listName, false);
         }
     }
 
@@ -102,7 +103,7 @@ public class ManageListActivity extends AppCompatActivity {
 
         //Log.v ("----API req:", speech + ".");
         final AIRequest aiRequest = new AIRequest();
-        final AIConfiguration config = new AIConfiguration("903fe05ba6064111aed341dc9c051e59",
+        final AIConfiguration config = new AIConfiguration("053305c5da7a46f0945605cbb496188e",
                 AIConfiguration.SupportedLanguages.English,
                 AIConfiguration.RecognitionEngine.System);
 
@@ -398,6 +399,7 @@ public class ManageListActivity extends AppCompatActivity {
         sl.items = ITEMLIST;
         if (ITEMLIST.isEmpty()) {
             ITEMLIST.add("no items");
+            guided = true;
         }
 
         Collections.sort(ITEMLIST);
@@ -452,6 +454,25 @@ public class ManageListActivity extends AppCompatActivity {
                         t1.speak(welcome, TextToSpeech.QUEUE_FLUSH, null, null);
                     } else {
                         t1.speak(welcome.toString(), TextToSpeech.QUEUE_FLUSH, null);
+                    }
+
+                    if (guided) {
+                        int a = 0;
+                        while (a < 2) {
+                            Toast.makeText(getApplicationContext(), "Start by adding an item to the list.\n\n " +
+                                    "For example: to add apples to the list, " +
+                                    "click the speech icon and say: \n - Add apples to list.", Toast.LENGTH_LONG).show();
+                            a++;
+                        }
+                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                            t1.speak("Start by adding an item to the list. For example: to add apples to the list, " +
+                                            "click the speech icon and say: Add apples to list.",
+                                    TextToSpeech.QUEUE_ADD, null, null);
+                        } else {
+                            t1.speak("Start by adding an item to the list. For example: to add apples to the list, " +
+                                            "click the speech icon and say: Add apples to list.",
+                                    TextToSpeech.QUEUE_ADD, null);
+                        }
                     }
                 } else
                     Log.v("DEBUG", "TTS failed to start");

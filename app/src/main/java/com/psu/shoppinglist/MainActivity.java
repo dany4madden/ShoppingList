@@ -50,7 +50,7 @@ import com.google.gson.JsonElement;
 
 public class MainActivity extends AppCompatActivity {
 	TextToSpeech t1;
-	CharSequence welcome = "Welcome to List Buddy";
+	CharSequence welcome = "Welcome to List Buddy.";
 
     String mainMenuHelp = "This is the Main Activity page. \n\nYou can Create, Delete, Count, or Open any existing list by saying " +
                     "following commands: " +
@@ -65,7 +65,7 @@ public class MainActivity extends AppCompatActivity {
     File [] files;
     private static final int SPEECH_REQUEST_CODE = 0;
     int numList = 0;
-
+    boolean guided = false;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -73,13 +73,8 @@ public class MainActivity extends AppCompatActivity {
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        // check muteVoice
-        //PreferenceManager.setDefaultValues(this, R.xml.fragment_settings, false);
-        //sharedPrefs = PreferenceManager.getDefaultSharedPreferences(this);
-        //muteVoice = sharedPrefs.getBoolean("checkBoxVoice", false);
-
-        initializeSpeech();
         doShowLists();
+        initializeSpeech();
     }
 
     public void initializeSpeech () {
@@ -99,6 +94,30 @@ public class MainActivity extends AppCompatActivity {
                         t1.speak(welcome, TextToSpeech.QUEUE_FLUSH, null, null);
                     } else {
                         t1.speak(welcome.toString(), TextToSpeech.QUEUE_FLUSH, null);
+                    }
+
+                    if (guided) {
+                        int a = 0;
+                        while (a < 5) {
+                            Toast.makeText(getApplicationContext(), "I am here to help you create and manage your grocery lists. "  +
+                                    "Let's start by creating a list. \n\nFor example: to create a Costco list, " +
+                                    "click the speech icon and say: \n - Create Costco list. \n\nThen, once the list is created " +
+                                    "you can manage it by saying: \n - Open Costco list.", Toast.LENGTH_LONG).show();
+                            a++;
+                        }
+                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                            t1.speak("I am here to help you create and manage your grocery lists. " +
+                                    "Let's start by creating a list. For example: to create a Costco list, " +
+                                    "click the speech icon and say: Create Costco list. Then, once the list is created" +
+                                             " you can manage it by saying: Open Costco list.",
+                                    TextToSpeech.QUEUE_ADD, null, null);
+                        } else {
+                            t1.speak("I am here to help you create and manage your grocery lists. " +
+                                    "Let's start by creating a list. For example: to create a Costco list, " +
+                                    "click the speech icon and say: Create Costco list. Then, once the list is created " +
+                                            " you can manage it by saying: Open Costco list.\",",
+                            TextToSpeech.QUEUE_ADD, null);
+                        }
                     }
 
                 } else
@@ -133,7 +152,7 @@ public class MainActivity extends AppCompatActivity {
 
         //Log.v ("----API req:", speech + ".");
         final AIRequest aiRequest = new AIRequest();
-        final AIConfiguration config = new AIConfiguration("903fe05ba6064111aed341dc9c051e59",
+        final AIConfiguration config = new AIConfiguration("053305c5da7a46f0945605cbb496188e",
                 AIConfiguration.SupportedLanguages.English,
                 AIConfiguration.RecognitionEngine.System);
 
@@ -583,6 +602,7 @@ public class MainActivity extends AppCompatActivity {
 
         if (SHOPPINGLIST.isEmpty()) {
             SHOPPINGLIST.add("no list");
+            guided = true;
         }
 
         ArrayAdapter adapter = new ArrayAdapter<String>(this,R.layout.content_main,SHOPPINGLIST);
